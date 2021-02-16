@@ -1,5 +1,5 @@
 <template>
-  <component ref="child" :is="compiled" v-if="compiled" />
+  <component :is="compiled" v-if="compiled" ref="child" />
 </template>
 
 <script>
@@ -95,26 +95,28 @@ export default {
   beforeMount() {
     this.compile()
   },
+  mounted() {
+    Object.keys(this.parentComponent.$data).forEach((key) => {
+      try {
+        if (this.parentComponent.$data[key] !== this.parentComponent)
+          // avoid "Too much recursion" error, when using parent
+          this.$watch(
+            '$refs.child.' + key,
+            (new_value) => (this.parentComponent.$data[key] = new_value),
+            { deep: true }
+          )
+        // catch other cases which may not work this way (usually because of deep-check)
+      } catch {
+        console.warn('Cannot watch: ' + '$refs.child.' + key)
+      }
+    })
+  },
 
   methods: {
     compile() {
       const component = compileToFunctions(this.template, this.compilerOptions)
       this.compiled = merge(component, this.componentProps, true)
     }
-  },
-  mounted() {
-        Object.keys(this.parentComponent.$data).forEach((key) => {
-            try {
-                if (this.parentComponent.$data[key] !== this.parentComponent)  // avoid "Too much recursion" error, when using parent
-                    this.$watch("$refs.child." + key,
-                        (new_value) => (this.parentComponent.$data[key] = new_value),
-                        {deep: true}
-                    );
-                // catch other cases which may not work this way (usually because of deep-check)
-            } catch {
-                console.warn('Cannot watch: ' + '$refs.child.' + key)
-            }
-        });
-    },
+  }
 }
 </script>
