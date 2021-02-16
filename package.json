@@ -9,6 +9,7 @@
   "scripts": {
     "test": "cross-env NODE_ENV=test jest --runInBand",
     "coveralls": "cross-env NODE_ENV=test jest --coverage && cat ./coverage/lcov.info | coveralls",
+    "debug": "npm run esm && npm run umd",
     "start": "cross-env NODE_ENV=development webpack-dev-server --hot --config build/webpack.docs.config.js",
     "build": "npm run clean && npm run lint && npm test && npm run esm && npm run umd && npm run docs",
     "esm": "cross-env NODE_ENV=production webpack --config build/webpack.esm.config.js",

@@ -96,6 +96,7 @@ export default {
     this.compile()
   },
   mounted() {
+    debugger
     Object.keys(this.parentComponent.$data).forEach((key) => {
       try {
         if (this.parentComponent.$data[key] !== this.parentComponent)
